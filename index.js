@@ -16,13 +16,16 @@ http.listen(port, () => {
 })
 
 io.on('connection', (socket) => {
-  console.log('connection', socket.id)
   socket.on('join-room', (roomId, userId) => {
+    console.log('Connected', roomId, userId)
     socket.join(roomId)
     socket.to(roomId).broadcast.emit('user-connected', userId)
-    socket.on('disconnected', () => {
+    socket.on('disconnect', () => {
       console.log('disconnected!', roomId, userId)
       socket.to(roomId).broadcast.emit('user-disconnected', userId)
+    })
+    socket.on('private-message', ({from, message}) => {
+      socket.to(roomId).emit('private-message', {from, message})
     })
   })
 })
