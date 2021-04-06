@@ -17,11 +17,9 @@ http.listen(port, () => {
 
 io.on('connection', (socket) => {
   socket.on('join-room', (roomId, userId) => {
-    console.log('Connected', roomId, userId)
     socket.join(roomId)
     socket.to(roomId).broadcast.emit('user-connected', userId)
     socket.on('disconnect', () => {
-      console.log('disconnected!', roomId, userId)
       socket.to(roomId).broadcast.emit('user-disconnected', userId)
     })
     socket.on('private-message', ({from, message}) => {
