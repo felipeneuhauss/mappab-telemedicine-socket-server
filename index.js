@@ -16,14 +16,19 @@ http.listen(port, () => {
 })
 
 io.on('connection', (socket) => {
+  console.log('connected')
   socket.on('join-room', (roomId, userId) => {
     socket.join(roomId)
     socket.to(roomId).broadcast.emit('user-connected', userId)
     socket.on('disconnect', () => {
       socket.to(roomId).broadcast.emit('user-disconnected', userId)
     })
-    socket.on('private-message', ({from, message}) => {
-      socket.to(roomId).emit('private-message', {from, message})
-    })
+  })
+
+  socket.on('medical-screening', (appointment) => {
+    socket.broadcast.emit('new-medical-screening', appointment);
+  })
+  socket.on('urgency-appointment', (appointment) => {
+    socket.broadcast.emit('new-urgency-appointment', appointment);
   })
 })
