@@ -4,7 +4,7 @@ app.use(cors())
 const http = require('http').createServer(app)
 const io = require('socket.io')(http, {
   cors: {
-    origin: '*',
+    origin: '*',      
     credentials: false
   }
 })
@@ -18,19 +18,26 @@ http.listen(port, () => {
 })
 
 io.on('connection', (socket) => {
-  console.log('connected')
-  socket.on('join-room', (roomId, userId) => {
-    socket.join(roomId)
-    socket.to(roomId).broadcast.emit('user-connected', userId)
-    socket.on('disconnect', () => {
-      socket.to(roomId).broadcast.emit('user-disconnected', userId)
-    })
-  })
-
-  socket.on('medical-screening', (appointment) => {
-    socket.broadcast.emit('new-medical-screening', appointment);
-  })
-  socket.on('urgency-appointment', (appointment) => {
-    socket.broadcast.emit('new-urgency-appointment', appointment);
-  })
+  console.log('socket established')
+  socket.on('join-room', (userData) => {
+      const { roomID, userID } = userData;
+      console.log(roomID, userID)
+      socket.join(roomID);
+      socket.to(roomID).broadcast.emit('user-connected', userData);
+      socket.on('disconnect', () => {
+          socket.to(roomID).broadcast.emit('user-disconnected', userID);
+      });
+      socket.on('broadcast-message', (message) => {
+          socket.to(roomID).broadcast.emit('new-broadcast-messsage', {...message, userData});
+      });
+      // socket.on('reconnect-user', () => {
+      //     socket.to(roomID).broadcast.emit('new-user-connect', userData);
+      // });
+      socket.on('display-media', (value) => {
+          socket.to(roomID).broadcast.emit('display-media', {userID, value });
+      });
+      socket.on('user-video-off', (value) => {
+          socket.to(roomID).broadcast.emit('user-video-off', value);
+      });
+  });
 })
