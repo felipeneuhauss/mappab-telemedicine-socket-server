@@ -18,26 +18,22 @@ http.listen(port, () => {
 })
 
 io.on('connection', (socket) => {
-  console.log('socket established')
   socket.on('join-room', (userData) => {
-      const { roomID, userID } = userData;
-      console.log(roomID, userID)
-      socket.join(roomID);
-      socket.to(roomID).broadcast.emit('user-connected', userData);
-      socket.on('disconnect', () => {
-          socket.to(roomID).broadcast.emit('user-disconnected', userID);
-      });
-      socket.on('broadcast-message', (message) => {
-          socket.to(roomID).broadcast.emit('new-broadcast-messsage', {...message, userData});
-      });
-      // socket.on('reconnect-user', () => {
-      //     socket.to(roomID).broadcast.emit('new-user-connect', userData);
-      // });
-      socket.on('display-media', (value) => {
-          socket.to(roomID).broadcast.emit('display-media', {userID, value });
-      });
-      socket.on('user-video-off', (value) => {
-          socket.to(roomID).broadcast.emit('user-video-off', value);
-      });
-  });
+    const {roomId, userId} = userData
+    console.log(roomId, userId)
+    socket.join(roomId)
+    socket.to(roomId).broadcast.emit('user-connected', userData)
+    socket.on('disconnect', () => {
+      socket.to(roomId).broadcast.emit('user-disconnected', userData)
+    })
+  })
+
+  socket.on('medical-screening', (appointment) => {
+    console.log('medical-screening-appointment', appointment)
+    socket.broadcast.emit('new-medical-screening', appointment);
+  })
+  socket.on('urgency-appointment', (appointment) => {
+    console.log('urgency-appointment-appointment', appointment)
+    socket.broadcast.emit('new-urgency-appointment', appointment);
+  })
 })
