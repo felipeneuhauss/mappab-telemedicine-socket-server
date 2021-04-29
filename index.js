@@ -19,13 +19,16 @@ http.listen(port, () => {
 io.on('connection', (socket) => {
   socket.on('join-room', (userData) => {
     const {roomId, userId} = userData
-    console.log(roomId, userId)
+    
+    console.log("room:", roomId,"user:", userId)
     socket.join(roomId)
-    socket.to(roomId).broadcast.emit('user-connected', userData)
-    socket.on('disconnect', () => {
-      socket.to(roomId).broadcast.emit('user-disconnected', userData)
+    socket.to(roomId).broadcast.emit('user-connected-in-room', userData)
+    socket.on('disconnect-room', () => {
+      socket.to(roomId).broadcast.emit('user-disconnected-from-room', userData)
     })
   })
+
+  
 
   socket.on('medical-screening', (appointment) => {
     console.log('medical-screening-appointment', appointment)
