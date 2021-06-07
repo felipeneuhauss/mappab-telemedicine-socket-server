@@ -19,7 +19,7 @@ http.listen(port, () => {
 io.on('connection', (socket) => {
   socket.on('join-room', (userData) => {
     const {roomId, userId} = userData
-    
+
     console.log("room:", roomId,"user:", userId)
     socket.join(roomId)
     socket.to(roomId).broadcast.emit('user-connected-in-room', userData)
@@ -28,14 +28,12 @@ io.on('connection', (socket) => {
     })
   })
 
-  
-
   socket.on('medical-screening', (appointment) => {
     console.log('medical-screening-appointment', appointment)
     socket.broadcast.emit('new-medical-screening', appointment);
   })
   socket.on('urgency-appointment', (appointment) => {
-    console.log('urgency-appointment-appointment', appointment)
+    console.log('urgency-appointment', appointment)
     socket.broadcast.emit('new-urgency-appointment', appointment);
   })
 })
