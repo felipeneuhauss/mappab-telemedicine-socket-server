@@ -23,12 +23,12 @@ http.listen(port, () => {
 
 io.on('connection', (socket) => {
   socket.on('join-room', (roomID) => {
-    console.log('join-room - roomID', roomID)
+    console.log('join-room-roomID', roomID)
     if (users[roomID]) {
       const length = users[roomID].length;
       
       if (length === 2) {
-          socket.emit("room full");
+          socket.emit("room-full");
           return;
       }
 
@@ -40,20 +40,20 @@ io.on('connection', (socket) => {
     socketToRoom[socket.id] = roomID;
     const usersInThisRoom = users[roomID].filter(id => id !== socket.id);
 
-    socket.emit("all users", usersInThisRoom);
+    socket.emit("all-users", usersInThisRoom);
   })
 
-  socket.on("sending signal", ({ userToSignal, signal, callerID }) => {
-    console.log('sending signal - userToSignal', userToSignal)
-    console.log('sending signal - signal', signal)
-    console.log('sending signal - callerID', callerID)
-    io.to(userToSignal).emit('user joined', { signal, callerID })
+  socket.on("sending-signal", ({ userToSignal, signal, callerID }) => {
+    // console.log('sending signal - userToSignal', userToSignal)
+    // console.log('sending signal - signal', signal)
+    // console.log('sending signal - callerID', callerID)
+    io.to(userToSignal).emit('user-joined', { signal, callerID })
   });
 
-  socket.on("returning signal", ({ signal, callerID }) => {
-    console.log('returning signal - signal', signal)
-    console.log('returning signal - callerID', callerID)
-    io.to(callerID).emit('receiving returned signal', { signal, id: socket.id });
+  socket.on("returning-signal", ({ signal, callerID }) => {
+    // console.log('returning signal - signal', signal)
+    // console.log('returning signal - callerID', callerID)
+    io.to(callerID).emit('receiving-returned-signal', { signal, id: socket.id });
   });
 
   socket.on('disconnect', () => {
@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
     }
 
     room.forEach(user => {
-        socket.broadcast.to(user).emit('user disconnected', socket.id)
+        socket.broadcast.to(user).emit('user-disconnected', socket.id)
     })
   });
 
